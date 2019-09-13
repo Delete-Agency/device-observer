@@ -34,7 +34,7 @@ deviceObserver.subscribeOnChange(() => {
 
 ## API
 
-### pageLocker.init(devices, [debounceMs])
+### deviceObserver.init(devices, [debounceMs])
 
 Sets options described in Options section
 
@@ -43,9 +43,10 @@ Sets options described in Options section
 *Required*<br>
 Type: `Object`
 
-### pageLocker.subscribeOnChange(cb)
+### deviceObserver.subscribeOnChange(cb)
 
-Sets options described in Options section
+Subscribe on device change. Passed callback function will be called every time device is changes 
+(in terms of user devices passed as the first argument to deviceObserver.init())
 
 #### cb
 

@@ -16,7 +16,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@deleteagency/live-highlight@0.0.1/build/live-highlight.min.js"></script>
 
     <script src="build/device-observer.min.js"></script>
-    <link rel="stylesheet" href="./examples/test.css" media="print" onload="this.onload = null; this.media = 'all';">
 </head>
 
 <script>
@@ -40,7 +39,10 @@
 <div class="py-4">
     <div class="container">
         <h2>Simple example</h2>
-
+        <p>
+            To get some understanding about why it's not robust to rely on window.innerWidth property, take a look at
+            <a href="./examples/window-width-test.html">this</a> page
+        </p>
         <p>
             Lets configure deviceObserver with a few devices and its width and start observing when it is changed.
             Try to resize the window end check the logs below.
@@ -49,38 +51,34 @@
         <div data-live-highlight-target="simple"></div>
 
         <div class="mb-5">
-            <textarea style="width: 100%" id="logs" rows="30"></textarea>
+            <textarea style="width: 100%" id="logs" rows="5"></textarea>
 
-            <script data-live-highlight="">
-                setTimeout(() => {
-                    const logs = document.getElementById('logs');
+            <script data-live-highlight="simple">
+                const logs = document.getElementById('logs');
 
-                    // the second argument is debounce time in second for handling window resize event (optional, default value - 100)
-                    deviceObserver.init({
-                        'desktop': 1024,
-                        'tablet': 768,
-                        'mobile': 0,
-                    }, 50);
+                // the second argument is debounce time in second for handling window resize event (optional, default value - 100)
+                deviceObserver.init({
+                    'desktop': 1024,
+                    'tablet': 768,
+                    'mobile': 0,
+                }, 50);
 
-                    deviceObserver.subscribeOnResize(() => {
-                        // this was triggered not more than one a 50ms
-                        console.log('Do some logic on every resize');
-                    });
+                deviceObserver.subscribeOnResize(() => {
+                    // this was triggered not more than one a 50ms
+                    console.log('Do some logic on every resize');
+                });
 
-                    // pass true as a second argument to immediately invoke the callback with the current device
-                    deviceObserver.subscribeOnChange((newDevice) => {
-                        logs.value += `${newDevice}\n`;
-                        logs.value += `Window outerWidth: ${window.outerWidth}\n`;
-                        logs.value += `Window innerWidth: ${window.innerWidth}\n`;
-                        logs.scrollTop = logs.scrollHeight;
+                // pass true as a second argument to immediately invoke the callback with the current device
+                deviceObserver.subscribeOnChange((newDevice) => {
+                    logs.value += `${newDevice}\n`;
+                    logs.scrollTop = logs.scrollHeight;
 
-                        if (deviceObserver.is('>=', 'desktop')) {
-                            console.log('Do some logic for big devices');
-                        } else {
-                            console.log('Do some logic for smaller devices');
-                        }
-                    }, true);
-                }, 1000)
+                    if (deviceObserver.is('>=', 'desktop')) {
+                        console.log('Do some logic for big devices');
+                    } else {
+                        console.log('Do some logic for smaller devices');
+                    }
+                }, true);
             </script>
         </div>
     </div>

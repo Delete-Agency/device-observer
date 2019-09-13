@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Window innerWidth/outerWidth examples</title>
+    <link rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+            crossorigin="anonymous">
+    <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/prismjs@1.17.1/themes/prism-okaidia.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.17.1/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.17.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@deleteagency/live-highlight@0.0.1/build/live-highlight.min.js"></script>
+</head>
+
+<script>
+    LiveHighlight.bootstrap((element, type) => {
+        function getLanguage(type) {
+            switch (type) {
+                case LiveHighlight.TYPE_JAVASCRIPT:
+                    return 'js';
+                case LiveHighlight.TYPE_STYLES:
+                    return 'css';
+                case LiveHighlight.TYPE_HTML:
+                    return 'markup';
+            }
+        }
+
+        element.className = `lang-${getLanguage(type)}`;
+        Prism.highlightElement(element);
+    });
+</script>
+<body>
+<div class="py-4">
+    <div class="container">
+        <h2>Window innerWidth/outerWidth</h2>
+        <p>
+            Below you can see a high resolution image without any styles.
+            Because of the fact that image is wider than window and there is no styles on the page, some browsers start to return different results for window.outerWidth/innerWidth
+            For the most part this problem is related to Android Chrome browsers, but maybe can be reproducible somewhere else.
+            Even if you think this conditions are far from the reality,
+            think about deferred styles approaches like below and how they can affect your javascript that loads and executes before any styles are loaded:
+            <a href="https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery">https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery</a>
+            <br>
+            <a href="https://github.com/filamentgroup/loadCSS#how-to-use-loadcss-recommended-example">https://github.com/filamentgroup/loadCSS#how-to-use-loadcss-recommended-example</a>
+        </p>
+
+        <div data-live-highlight-target="simple"></div>
+
+        <div class="mb-5">
+            <textarea style="width: 100%" id="logs" rows="30"></textarea>
+
+            <script data-live-highlight="">
+                const logs = document.getElementById('logs');
+
+                function log() {
+                    logs.value += 'Window outerWidth:' + window.outerWidth + '\n';
+                    logs.value += 'Window innerWidth:' + window.innerWidth + '\n';
+                }
+
+                setInterval(function () {
+                    log();
+                }, 500);
+            </script>
+        </div>
+
+        <img src="./img.jpg" alt="">
+    </div>
+</div>
+</body>
+</html>
