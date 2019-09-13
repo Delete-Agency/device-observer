@@ -27,7 +27,7 @@ deviceObserver.init({
 
 deviceObserver.subscribeOnChange(() => {
     if(deviceObserver.is('>=', 'tablet')){
-        console.log('Tablet and above. Do do dome logic')
+        console.log('Tablet and above. Do dome logic')
     }
 })
 ```
