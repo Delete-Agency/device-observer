@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Device Observer examples</title>
+    <link rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+            crossorigin="anonymous">
+    <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/prismjs@1.17.1/themes/prism-okaidia.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.17.1/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.17.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@deleteagency/live-highlight@0.0.1/build/live-highlight.min.js"></script>
+
+    <script src="build/device-observer.min.js"></script>
+</head>
+
+<script>
+    LiveHighlight.bootstrap((element, type) => {
+        function getLanguage(type) {
+            switch (type) {
+                case LiveHighlight.TYPE_JAVASCRIPT:
+                    return 'js';
+                case LiveHighlight.TYPE_STYLES:
+                    return 'css';
+                case LiveHighlight.TYPE_HTML:
+                    return 'markup';
+            }
+        }
+
+        element.className = `lang-${getLanguage(type)}`;
+        Prism.highlightElement(element);
+    });
+</script>
+<body>
+<div class="py-4">
+    <div class="container">
+        <h2>Simple example</h2>
+
+        <p>
+            Lets configure deviceObserver with a few devices and its width and start observing when it is changed.
+            Try to resize the window end check the logs below.
+        </p>
+
+        <div data-live-highlight-target="simple"></div>
+
+        <div class="mb-5">
+            <textarea style="width: 100%" id="logs" rows="30"></textarea>
+
+            <script data-live-highlight="simple">
+                const logs = document.getElementById('logs');
+
+                // the second argument is debounce time in second for handling window resize event (optional, default value - 100)
+                deviceObserver.init({
+                    'desktop': 1024,
+                    'tablet': 768,
+                    'mobile': 0,
+                }, 50);
+
+                deviceObserver.subscribeOnResize(() => {
+                    // this was triggered not more than one a 50ms
+                    console.log('Do some logic on every resize');
+                });
+
+                // pass true as a second argument to immediately invoke the callback with the current device
+                deviceObserver.subscribeOnChange((newDevice) => {
+                    logs.value += `${newDevice}\n`;
+                    logs.value += `Window outerWidth: ${window.outerWidth}\n`;
+                    logs.value += `Window innerWidth: ${window.innerWidth}\n`;
+                    logs.scrollTop = logs.scrollHeight;
+
+                    if (deviceObserver.is('>=', 'desktop')) {
+                        console.log('Do some logic for big devices');
+                    } else {
+                        console.log('Do some logic for smaller devices');
+                    }
+                }, true);
+            </script>
+        </div>
+    </div>
+</div>
+</body>
+</html>
