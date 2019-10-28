@@ -38,39 +38,37 @@
 <body>
 <div class="py-4">
     <div class="container">
-        <h2>Simple example</h2>
-        <p>
-            To get some understanding about why it's not robust to rely on window.innerWidth property, take a look at
-            <a href="./examples/window-width-test.html">this</a> page
-        </p>
-        <p>
-            Lets configure deviceObserver with a few devices and its width and start observing when it is changed.
-            Try to resize the window end check the logs below.
-        </p>
-
-        <div data-live-highlight-target="simple"></div>
-
         <div class="mb-5">
+            <h2>Simple example</h2>
+            <p>
+                To get some understanding about why it's not robust to rely on window.innerWidth property, take a look at
+                <a href="./examples/window-width-test.html">this</a> page
+            </p>
+            <p>
+                Lets configure deviceObserver with a few devices and its width and start observing when it is changed.
+                Try to resize the window end check the logs below.
+            </p>
+
+            <div data-live-highlight-target="simple"></div>
+
             <textarea style="width: 100%" id="logs" rows="5"></textarea>
 
             <script data-live-highlight="simple">
                 const logs = document.getElementById('logs');
 
-                // the second argument is debounce time in second for handling window resize event (optional, default value - 100)
                 deviceObserver.init({
-                    'desktop': 1024,
-                    'tablet': 768,
                     'mobile': 0,
-                }, 50);
+                    'tablet': 768,
+                    'desktop': 1024,
+                });
 
                 deviceObserver.subscribeOnResize(() => {
                     // this was triggered not more than one a 50ms
                     console.log('Do some logic on every resize');
                 });
 
-                // pass true as a second argument to immediately invoke the callback with the current device
-                deviceObserver.subscribeOnChange((newDevice) => {
-                    logs.value += `${newDevice}\n`;
+                deviceObserver.subscribeOnChange((newDevice, oldDevice) => {
+                    logs.value += `${oldDevice} --> ${newDevice}\n`;
                     logs.scrollTop = logs.scrollHeight;
 
                     if (deviceObserver.is('>=', 'desktop')) {
@@ -78,7 +76,31 @@
                     } else {
                         console.log('Do some logic for smaller devices');
                     }
-                }, true);
+                });
+            </script>
+        </div>
+
+        <div class="mb-5">
+            <h2>Desktop first</h2>
+            <p>
+                By default deviceObserver assumes that you use mobile-first approach.
+                If that is not the case you can pass mobileFirst: false in the options
+                to set your breakpoints strategy to desktop-first
+            </p>
+
+            <button id="switch-to-desktop-first-button"
+                    class="btn btn-primary">Switch to desktop first
+            </button>
+
+            <script data-live-highlight>
+                document.getElementById('switch-to-desktop-first-button')
+                    .addEventListener('click', () => {
+                        deviceObserver.init({
+                            'desktop': Infinity,
+                            'tablet': 1024,
+                            'mobile': 768
+                        }, { mobileFirst: false });
+                    });
             </script>
         </div>
     </div>

@@ -2,6 +2,7 @@ const DEFAULT_RESIZE_DEBOUNCE = 100;
 
 class DeviceObserver {
     constructor() {
+        this._inited = false;
         this._devices = {};
         this._ascendingDevicesArray = [];
         this._deviceName = null;
@@ -19,13 +20,18 @@ class DeviceObserver {
      *   'tablet': 768,
      *   'desktop:' 1024,
      * }
-     * @param resizeDebounce
+     * @param {Object} options
      */
-    init(devices, resizeDebounce) {
+    init(devices, options = {}) {
         this._setDevicesData(devices);
-        this._resizeDebounce = resizeDebounce || DEFAULT_RESIZE_DEBOUNCE;
+        this._resizeDebounce = 'resizeDebounce' in options ? options.resizeDebounce : DEFAULT_RESIZE_DEBOUNCE;
+        this._mobileFirst = 'mobileFirst' in options ? options.mobileFirst : true;
         this._updateDeviceData();
-        window.addEventListener('resize', this._onWindowResize.bind(this));
+
+        if (!this._inited) {
+            this._inited = true;
+            window.addEventListener('resize', this._onWindowResize.bind(this));
+        }
     }
 
     /**
@@ -42,9 +48,6 @@ class DeviceObserver {
 
         if (this._ascendingDevicesArray.length === 0) {
             throw new Error('No devices specified');
-        }
-        if (this._ascendingDevicesArray[0][1] !== 0) {
-            throw new Error('Smallest device name must have breakpoint equal 0');
         }
     }
 
@@ -71,10 +74,32 @@ class DeviceObserver {
         }
     }
 
+    _checkDevices() {
+        if (this._ascendingDevicesArray.length === 0) {
+            throw new Error('No devices specified');
+        }
+
+        if (this._mobileFirst && this._ascendingDevicesArray[0][1] !== 0) {
+            throw new Error('The smallest device must have breakpoint equal 0 in case mobile-first approach is used');
+        }
+
+        if (!this._mobileFirst && this._ascendingDevicesArray[this._ascendingDevicesArray.length - 1][1] !== Infinity) {
+            throw new Error('The greatest device name must have breakpoint equal Infinity in case desktop-first approach is used');
+        }
+    }
+
     _updateDeviceData() {
-        // reverse array because of mobile-first
-        // create the new array before reverse not to mutate original one
-        const currentDevice = [...this._ascendingDevicesArray].reverse().find(deviceData => this._isGreaterOrEqual(deviceData[1]));
+        this._checkDevices();
+
+        let currentDevice;
+        if (this._mobileFirst) {
+            // reverse array because of mobile-first
+            // create the new array before reverse not to mutate original one
+            currentDevice = [...this._ascendingDevicesArray].reverse().find(deviceData => this._isGreaterOrEqual(deviceData[1]));
+        } else {
+            currentDevice = this._ascendingDevicesArray.find(deviceData => this._isLowerOrEqual(deviceData[1]));
+        }
+
         this._deviceIndex = this._ascendingDevicesArray.indexOf(currentDevice);
         this._deviceName = currentDevice[0];
     }
@@ -91,6 +116,15 @@ class DeviceObserver {
         return matchMedia(`only screen and (min-width:${pixelsValue}px)`).matches;
     }
 
+    _isLowerOrEqual(pixelsValue) {
+        // convert Infinity to some really big number
+        // to make sure matchMedia below returns true in that case
+        if (pixelsValue === Infinity) {
+            pixelsValue = 100000;
+        }
+        return matchMedia(`only screen and (max-width:${pixelsValue}px)`).matches;
+    }
+
     _getDeviceNameIndex(deviceName) {
         return this._ascendingDevicesArray.findIndex(deviceData => deviceData[0] === deviceName);
     }
@@ -104,11 +138,8 @@ class DeviceObserver {
         };
     }
 
-    subscribeOnChange(cb, getInitialValue = false) {
+    subscribeOnChange(cb) {
         this._deviceChangeCallbacks.push(cb);
-        if (getInitialValue) {
-            cb(this._deviceName);
-        }
 
         // return unsubscribe method
         return () => {
