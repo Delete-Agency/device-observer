@@ -21,18 +21,7 @@ module.exports = (env, argv) => {
                     test: /\.(js|jsx)$/,
                     exclude: /node_modules/,
                     use: {
-                        loader: "babel-loader",
-                        options: {
-                            presets: [
-                                [
-                                    '@babel/preset-env',
-                                    {
-                                        useBuiltIns: 'usage',
-                                        corejs: 3
-                                    }
-                                ]
-                            ]
-                        }
+                        loader: "babel-loader"
                     }
                 }
             ]
