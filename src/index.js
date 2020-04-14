@@ -1,3 +1,4 @@
-import deviceObserver from './device-observer';
+import DeviceObserver from './device-observer';
 
-export { deviceObserver };
+const deviceObserver = new DeviceObserver();
+export { deviceObserver, DeviceObserver };
