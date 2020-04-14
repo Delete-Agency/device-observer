@@ -199,4 +199,4 @@ class DeviceObserver {
     }
 }
 
-export default (new DeviceObserver());
+export default DeviceObserver;
