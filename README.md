@@ -26,73 +26,86 @@ $ npm install @deleteagency/device-observer
 ## Usage
 
 ```js
-import deviceObserver from  '@deleteagency/device-observer';
-
-deviceObserver.init({
-    'mobile': 0,
-    'tablet': 768,
-    'desktop': 1024
-});
-
-if(deviceObserver.is('>=', 'tablet')){
-    console.log('Tablet and above. Do dome logic')
+const devices = {
+	'mobile': 0,
+	'tablet': 768,
+	'desktop': 1024,
 }
 
+const deviceObserver = new DeviceObserver(devices)
+
+deviceObserver.subscribeOnResize(() => {
+	// this will triggered not more than ones at 50ms by default
+	console.log('Do some logic on every resize');
+});
+
 deviceObserver.subscribeOnChange((newDevice, oldDevice) => {
-    if(deviceObserver.is('<', 'tablet')){
-        console.log('Small device was detected. Do dome logic')
-    }
-})
+
+	if (deviceObserver.is('<', 'desktop')) {
+		console.log('Do some logic for smaller devices');
+	} else {
+		console.log('Do some logic for bigger devices');
+	}
+});
 ```
 
 ## API
 
-### init(devices, options = {})
+### constructor(devices, options = {})
 Sets options described in Options section
+
 
 #### options
 *Required*<br>
 Type: `Object`
 
+
 ##### resizeDebounce 
-Debounce time in milliseconds for handling window resize event. Default value - `50`. 
+Debounce time in milliseconds for handling window resize event.<br>  
+Default value - `50`.<br> 
+Type: number
+
 
 ##### mobileFirst
-Whether to use mobileFirst approach in current device determining. Default value - `true`
+Whether to use mobileFirst approach in current device determining.<br> 
+Default value - `true`.<br> 
+Type: `Boolean`
+
+
+### subscribeOnResize(cb)
+Subscribe on viewport changing with debounce time. Passed callback function will be called every time viewport is changes
+
+
+#### cb
+*Required*<br>
+Type: `(currentDevice) => void`
+
 
 ### subscribeOnChange(cb)
 Subscribe on device change. Passed callback function will be called every time device is changes 
 (in terms of user devices passed as the first argument to deviceObserver.init())
 
+
 #### cb
 *Required*<br>
-Type: `Function`
+Type: `(newDevice, oldDevice) => void`<br> 
 
-Callback function what has the following signature: `function cb(newDeviceName, oldDeviceName)`
-
-### isMatch(deviceName), isGt(deviceName), isGe(deviceName), isLt(deviceName), isLe(deviceName)
-Returns `Boolean`
-
-Returns whether current device matches (is greater then, is greater or even, is lower then, is lower or even) passed device name
-
-#### deviceName
-*Required*<br>
-Type: `string`
 
 ### is(operator, deviceName) 
 Returns `Boolean`
 
 Just an alias for the above methods
 
+
 #### operator
 *Required*<br>
-Type: `string`
-
+Type: `string`<br> 
 Allowed values: '=', '>', '>=', '<', '<='
 
 #### deviceName
 *Required*<br>
 Type: `string`
+
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
