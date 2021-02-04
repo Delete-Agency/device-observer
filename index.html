@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.17.1/plugins/autoloader/prism-autoloader.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@deleteagency/live-highlight@0.0.1/build/live-highlight.min.js"></script>
 
-    <script src="demo/dist/device-observer.min.js"></script>
+    <script src="dist/index.min.js"></script>
 </head>
 
 <script>
@@ -56,14 +56,24 @@
             <script data-live-highlight="simple">
                 const logs = document.getElementById('logs');
 
-                deviceObserver.init({
+                const mobileFirst = JSON.parse(!sessionStorage.getItem('isDesktop'));
+
+                const mobileFirstOptions = {
                     'mobile': 0,
                     'tablet': 768,
                     'desktop': 1024,
-                });
+                }
+
+                const desktopFirstOptions = {
+                    'desktop': Infinity,
+                    'tablet': 1024,
+                    'mobile': 768
+                }
+
+                const deviceObserver = new DeviceObserver(mobileFirst ? mobileFirstOptions : desktopFirstOptions, mobileFirst)
 
                 deviceObserver.subscribeOnResize(() => {
-                    // this was triggered not more than one a 50ms
+                    // this was triggered not more than one a 50ms by default
                     console.log('Do some logic on every resize');
                 });
 
@@ -71,10 +81,10 @@
                     logs.value += `${oldDevice} --> ${newDevice}\n`;
                     logs.scrollTop = logs.scrollHeight;
 
-                    if (deviceObserver.is('>=', 'desktop')) {
-                        console.log('Do some logic for big devices');
-                    } else {
+                    if (deviceObserver.is('<', 'desktop')) {
                         console.log('Do some logic for smaller devices');
+                    } else {
+                        console.log('Do some logic for big devices');
                     }
                 });
             </script>
@@ -88,18 +98,15 @@
                 to set your breakpoints strategy to desktop-first
             </p>
 
-            <button id="switch-to-desktop-first-button"
-                    class="btn btn-primary">Switch to desktop first
+            <button id="switchBetween"
+                    class="btn btn-primary">Toggle between desktop and mobile first
             </button>
 
             <script data-live-highlight>
-                document.getElementById('switch-to-desktop-first-button')
+                document.getElementById('switchBetween')
                     .addEventListener('click', () => {
-                        deviceObserver.init({
-                            'desktop': Infinity,
-                            'tablet': 1024,
-                            'mobile': 768
-                        }, { mobileFirst: false });
+                        sessionStorage.setItem('isDesktop', !sessionStorage.getItem('isDesktop'))
+                        location.reload();
                     });
             </script>
         </div>
