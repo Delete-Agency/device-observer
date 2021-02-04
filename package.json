@@ -2,10 +2,7 @@
   "name": "@deleteagency/device-observer",
   "version": "3.0.0",
   "description": "",
-  "main": "src/index.ts",
-  "files": [
-    "src"
-  ],
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Delete-Agency/device-observer.git"
@@ -16,7 +13,8 @@
     "build:watch": "webpack --config webpack.base.config.js --watch",
     "build:types": "tsc -d --declarationDir dist --declarationMap --emitDeclarationOnly",
     "test": "echo \"No test specified\"",
-    "prepublishOnly": "npm run build && npm run build:types"
+    "prepublishOnly": "npm run build && npm run build:types",
+    "publish": "npm run build && npm run build:types"
   },
   "author": "",
   "license": "MIT",

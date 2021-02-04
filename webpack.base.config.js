@@ -9,8 +9,10 @@ module.exports = (env, argv) => {
             'index': './src/index.ts'
         },
         output: {
-            filename: './[name].min.js',
-            libraryTarget: 'umd'
+            filename: './[name].js',
+            library: 'device-observer',
+            libraryTarget: 'umd',
+            umdNamedDefine: true
         },
         resolve: {
             extensions: ['.ts'],
