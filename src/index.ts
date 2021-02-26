@@ -79,10 +79,10 @@ export class DeviceObserver<Devices extends importDevices> {
     private get _getCurrentDevice() {
         return this._options.mobileFirst
             ? this._devices
-                .find(({ size }) => this.isLowerOrEqual(size))
-            : this._devices
                 .reverse()
-                .find(({ size }) => this.isGreaterOrEqual(size));
+                .find(({ size }) => this.isGreaterOrEqual(size))
+            : this._devices
+                .find(({ size }) => this.isLowerOrEqual(size));
     }
 
     private _invokeResize(): void {
