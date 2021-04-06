@@ -78,7 +78,7 @@ export class DeviceObserver<Devices extends importDevices> {
 
     private get _getCurrentDevice() {
         return this._options.mobileFirst
-            ? this._devices
+            ? [...this._devices]
                 .reverse()
                 .find(({ size }) => this.isGreaterOrEqual(size))
             : this._devices
