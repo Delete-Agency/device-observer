@@ -61,7 +61,7 @@ export class DeviceObserver<Devices extends importDevices> {
             clearTimeout(this._debounceTimeoutId);
         }
 
-        this._debounceTimeoutId = setTimeout(this._handleWindowResize, this._options.resizeDebounce);
+        this._debounceTimeoutId = window.setTimeout(this._handleWindowResize, this._options.resizeDebounce);
     }
 
     private _handleWindowResize = (): void => {
